@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .content{
+        margin: auto;
+        width: 80%;
+        border: 3px solid #73AD21;
+        padding: 10px;
+    }
+</style>
+<body>
+    <div class="content">
+        <h1>This page is a simple demo of how you can add screen share feature in your webpage.</h1>
+        <h4>Click share screen button to start screen sharing</h4>
+        <div><button onclick="shareScreen()">Share Screen</button></div>
+        <h4>You can see your screen below</h4>
+        <div><video id="video-screen" width="640" height="480" autoplay></video></div>
+        <div class="output-screen"></div>
+        <div id="log-screen"></div>
+        <br/>
+        <div><button id="snapshot-btn" onclick="captureSnapshot()" style="display: none;">Capture Snapshot</button></div>
+        <br/>
+        <img id="photo-screen" alt="The picture will appear in this box." style="display: none;"/>
+        <canvas id="canvas-screen"></canvas>
+    </div>
+    <script>
+        const videoElem = document.getElementById("video-screen");
+        var displayMediaOptions = {
+                    video: {
+                        cursor: "always"
+                    },
+                    audio: false
+                };
+        async function shareScreen(){
+            console.log('screen share clicked');
+            videoElem.srcObject = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+            dumpOptionsInfo();
+            document.getElementById('snapshot-btn').style.display = 'block';
+        }
+
+        function dumpOptionsInfo() {
+            const videoTrack = videoElem.srcObject.getVideoTracks()[0];
+            var settings = JSON.stringify(videoTrack.getSettings(), null, 2);
+            var constrains = JSON.stringify(videoTrack.getConstraints(), null, 2);
+            console.info("Track settings:");
+            console.info(settings);
+            console.info("Track constrains:");
+            console.info(constrains);
+            var htmlstring = "Settings<br/>"+ settings + "<br/>Constrains<br/>" + constrains;
+            document.getElementById('log-screen').innerHTML = htmlstring;
+        }
+
+        function captureSnapshot(){
+            console.log('capture snapshot');
+            var video_screen = document.getElementById('video-screen');
+            var canvas_screen = document.getElementById('canvas-screen');
+            var screen_context = canvas_screen.getContext('2d');
+            var photo_screen = document.getElementById('photo-screen');
+            var canvas_screen = document.getElementById('canvas-screen');
+            canvas_screen.width = screen.width;
+            canvas_screen.height = screen.height;
+            screen_context.drawImage(video_screen, 0, 0, 640, 480);
+            var screen_data = canvas_screen.toDataURL('image/png');
+            photo_screen.setAttribute('src', screen_data);
+        }
+    </script>
+</body>
+</html>
